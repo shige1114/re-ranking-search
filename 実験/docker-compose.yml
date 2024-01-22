@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+  front:
+    build:
+      context: ./front-docker
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./front
+        target: /front
+    ports:
+      - "3000:3000"
+    # 他の設定を追加する場合はここに追加
+    stdin_open: true
+    tty: true
+    networks:
+      - golang_test_network
+  back:
+    build:
+      context: ./back-docker
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./back
+        target: /back
+    ports:
+      - "8000:8000"
+    # 他の設定を追加する場合はここに追加
+    networks:
+      - golang_test_network
+    
+    stdin_open: true
+    tty: true
+    
+
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./db-docker
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_DB=test_db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    tty: true
+    ports:
+      - 5555:5432
+
+    volumes:
+      - type: volume
+        source: test_rerank_volume
+        target: /var/lib/postgresql
+      - type: bind
+        source: ./db/
+        target: /db/
+    networks:
+      - golang_test_network
+
+volumes:
+  test_rerank_volume:
+
+networks:
+  golang_test_network:
+    driver: bridge
