@@ -1,5 +1,6 @@
 from fastapi import FastAPI,HTTPException,Request,status
 # FastAPI インスタンスを作成
+
 from api.login import router as login_router
 from api.serch import router as serch_router
 from api.reranking import router as reranking_router
@@ -47,6 +48,8 @@ app.add_middleware(
 # 実行用のコマンド
 if __name__ == "__main__":
     import uvicorn
+    import os
+    port = os.getenv("PORT",4500)
     # uvicornを使用してサーバーを起動
     # main ファイルの中で直接起動するときに使います
-    uvicorn.run("main:app", host="172.19.0.4", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)
